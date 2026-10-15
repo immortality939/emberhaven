@@ -5,7 +5,7 @@ app.set('trust proxy',1);app.use(express.json({limit:'300kb'}));
 
 /* ---- storage: Supabase if env is set, otherwise accounts.json (local testing only) ---- */
 const FILE=path.join(__dirname,'accounts.json');let MEM={};try{MEM=JSON.parse(fs.readFileSync(FILE))}catch(e){}
-const H={apikey:SK,Authorization:'Bearer '+SK,'Content-Type':'application/json'};
+const H={apikey:SK,'Content-Type':'application/json'};if(SK.startsWith('ey'))H.Authorization='Bearer '+SK; // old-style JWT keys need this header, new sb_secret keys don't
 async function getAcc(email){
   if(!SB)return MEM[email]||null;
   const r=await fetch(`${SB}/rest/v1/eh_accounts?email=eq.${encodeURIComponent(email)}&select=*`,{headers:H});
